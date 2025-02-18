@@ -1,76 +1,63 @@
-import * as anchor from '@coral-xyz/anchor'
-import {Program} from '@coral-xyz/anchor'
-import {Keypair} from '@solana/web3.js'
-import {MovieReviews} from '../target/types/MovieReviews'
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { Keypair } from "@solana/web3.js";
+import { MovieReviews } from "../target/types/movie_reviews";
 
-describe('MovieReviews', () => {
+describe("MovieReviews", () => {
   // Configure the client to use the local cluster.
-  const provider = anchor.AnchorProvider.env()
-  anchor.setProvider(provider)
-  const payer = provider.wallet as anchor.Wallet
+  const provider = anchor.AnchorProvider.env();
+  anchor.setProvider(provider);
+  const payer = provider.wallet as anchor.Wallet;
 
-  const program = anchor.workspace.MovieReviews as Program<MovieReviews>
+  const program = anchor.workspace.MovieReviews as Program<MovieReviews>;
 
-  const MovieReviewsKeypair = Keypair.generate()
+  const MovieReviewsKeypair = Keypair.generate();
 
-  it('Initialize MovieReviews', async () => {
-    await program.methods
-      .initialize()
-      .accounts({
-        MovieReviews: MovieReviewsKeypair.publicKey,
-        payer: payer.publicKey,
-      })
-      .signers([MovieReviewsKeypair])
-      .rpc()
+  const movie = {
+    title: "Just a test movie",
+    description: "Wow what a good movie it was real great",
+    rating: 5,
+  };
 
-    const currentCount = await program.account.MovieReviews.fetch(MovieReviewsKeypair.publicKey)
+  const [movie_pda] = anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from(movie.title), provider.wallet.publicKey.toBuffer()],
+    program.programId
+  );
 
-    expect(currentCount.count).toEqual(0)
-  })
+  it("Movie review is added", async () => {
+    // Add your test here.
+    const tx = await program.methods
+      .addMovieReview(movie.title, movie.description, movie.rating)
+      .rpc();
 
-  it('Increment MovieReviews', async () => {
-    await program.methods.increment().accounts({ MovieReviews: MovieReviewsKeypair.publicKey }).rpc()
+    const account = await program.account.movieAccountState.fetch(movie_pda);
+    expect(movie.title === account.title);
+    expect(movie.rating === account.rating);
+    expect(movie.description === account.description);
+    expect(account.reviewer === provider.wallet.publicKey);
+  });
 
-    const currentCount = await program.account.MovieReviews.fetch(MovieReviewsKeypair.publicKey)
+  it("Movie review is updated`", async () => {
+    const newDescription = "Wow this is new";
+    const newRating = 4;
 
-    expect(currentCount.count).toEqual(1)
-  })
+    const tx = await program.methods
+      .updateMovieReview(movie.title, newDescription, newRating)
+      .rpc();
 
-  it('Increment MovieReviews Again', async () => {
-    await program.methods.increment().accounts({ MovieReviews: MovieReviewsKeypair.publicKey }).rpc()
+    const account = await program.account.movieAccountState.fetch(movie_pda);
+    expect(movie.title === account.title);
+    expect(newRating === account.rating);
+    expect(newDescription === account.description);
+    expect(account.reviewer === provider.wallet.publicKey);
+  });
 
-    const currentCount = await program.account.MovieReviews.fetch(MovieReviewsKeypair.publicKey)
+  it("All movie reviews", async () => {
+    const accounts = await program.account.movieAccountState.all();
+    console.log(accounts);
+  });
 
-    expect(currentCount.count).toEqual(2)
-  })
-
-  it('Decrement MovieReviews', async () => {
-    await program.methods.decrement().accounts({ MovieReviews: MovieReviewsKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.MovieReviews.fetch(MovieReviewsKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(1)
-  })
-
-  it('Set MovieReviews value', async () => {
-    await program.methods.set(42).accounts({ MovieReviews: MovieReviewsKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.MovieReviews.fetch(MovieReviewsKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(42)
-  })
-
-  it('Set close the MovieReviews account', async () => {
-    await program.methods
-      .close()
-      .accounts({
-        payer: payer.publicKey,
-        MovieReviews: MovieReviewsKeypair.publicKey,
-      })
-      .rpc()
-
-    // The account should no longer exist, returning null.
-    const userAccount = await program.account.MovieReviews.fetchNullable(MovieReviewsKeypair.publicKey)
-    expect(userAccount).toBeNull()
-  })
-})
+  // it("Deletes a movie review", async () => {
+  //   const tx = await program.methods.deleteMovieReview(movie.title).rpc();
+  // });
+});

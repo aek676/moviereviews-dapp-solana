@@ -1,0 +1,223 @@
+{
+  "address": "BAogysdq9WGznDqMf3EmXjM8QdR5gWEVK5WJhEXgPB7S",
+  "metadata": {
+    "name": "movie_reviews",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "add_movie_review",
+      "discriminator": [
+        82,
+        218,
+        40,
+        213,
+        242,
+        141,
+        142,
+        57
+      ],
+      "accounts": [
+        {
+          "name": "movie_review",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "title"
+              },
+              {
+                "kind": "account",
+                "path": "initializer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "initializer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "rating",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "delete_movie_review",
+      "discriminator": [
+        145,
+        87,
+        218,
+        149,
+        170,
+        123,
+        217,
+        101
+      ],
+      "accounts": [
+        {
+          "name": "movie_review",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "title"
+              },
+              {
+                "kind": "account",
+                "path": "initializer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "initializer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "title",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "update_movie_review",
+      "discriminator": [
+        249,
+        116,
+        24,
+        72,
+        122,
+        80,
+        243,
+        89
+      ],
+      "accounts": [
+        {
+          "name": "movie_review",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "arg",
+                "path": "title"
+              },
+              {
+                "kind": "account",
+                "path": "initializer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "initializer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "rating",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "MovieAccountState",
+      "discriminator": [
+        103,
+        146,
+        32,
+        212,
+        187,
+        166,
+        40,
+        13
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidRating",
+      "msg": "Rating must be between 1 and 5"
+    },
+    {
+      "code": 6001,
+      "name": "TitleTooLong",
+      "msg": "Movie Title too long"
+    },
+    {
+      "code": 6002,
+      "name": "DescriptionTooLong",
+      "msg": "Movie Description too long"
+    }
+  ],
+  "types": [
+    {
+      "name": "MovieAccountState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "reviewer",
+            "type": "pubkey"
+          },
+          {
+            "name": "rating",
+            "type": "u8"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}
