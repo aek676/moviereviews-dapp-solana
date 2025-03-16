@@ -4,19 +4,16 @@ import { Keypair } from "@solana/web3.js";
 import { MovieReviews } from "../target/types/movie_reviews";
 
 describe("MovieReviews", () => {
-  // Configure the client to use the local cluster.
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
-  const payer = provider.wallet as anchor.Wallet;
 
   const program = anchor.workspace.MovieReviews as Program<MovieReviews>;
-
-  const MovieReviewsKeypair = Keypair.generate();
 
   const movie = {
     title: "Just a test movie",
     description: "Wow what a good movie it was real great",
     rating: 5,
+    image: "6gQbZWRnaKBVk9Dvrfvt3tgdvYxPMU49W32MUB4xVNLV",
   };
 
   const [movie_pda] = anchor.web3.PublicKey.findProgramAddressSync(
@@ -25,16 +22,18 @@ describe("MovieReviews", () => {
   );
 
   it("Movie review is added", async () => {
-    // Add your test here.
     const tx = await program.methods
-      .addMovieReview(movie.title, movie.description, movie.rating)
+      .addMovieReview(movie.title, movie.description, movie.rating, movie.image)
       .rpc();
 
     const account = await program.account.movieAccountState.fetch(movie_pda);
-    expect(movie.title === account.title);
-    expect(movie.rating === account.rating);
-    expect(movie.description === account.description);
     expect(account.reviewer === provider.wallet.publicKey);
+    expect(movie.title === account.title);
+    expect(movie.description === account.description);
+    expect(movie.rating === account.rating);
+    expect(movie.image === account.image);
+
+    console.log(`https://explorer.solana.com/tx/${tx}?cluster=devnet`);
   });
 
   it("Movie review is updated`", async () => {
@@ -46,10 +45,13 @@ describe("MovieReviews", () => {
       .rpc();
 
     const account = await program.account.movieAccountState.fetch(movie_pda);
+    expect(account.reviewer === provider.wallet.publicKey);
     expect(movie.title === account.title);
     expect(newRating === account.rating);
     expect(newDescription === account.description);
-    expect(account.reviewer === provider.wallet.publicKey);
+    expect(movie.image === account.image);
+
+    console.log(`https://explorer.solana.com/tx/${tx}?cluster=devnet`);
   });
 
   it("All movie reviews", async () => {
@@ -57,7 +59,13 @@ describe("MovieReviews", () => {
     console.log(accounts);
   });
 
-  // it("Deletes a movie review", async () => {
-  //   const tx = await program.methods.deleteMovieReview(movie.title).rpc();
-  // });
+  it("Deletes a movie review", async () => {
+    const tx = await program.methods.deleteMovieReview(movie.title).rpc();
+
+    const account = await program.account.movieAccountState.fetchNullable(
+      movie_pda
+    );
+    console.log(account === null);
+    console.log(`https://explorer.solana.com/tx/${tx}?cluster=devnet`);
+  });
 });

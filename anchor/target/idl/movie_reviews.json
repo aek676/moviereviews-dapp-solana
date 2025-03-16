@@ -1,5 +1,5 @@
 {
-  "address": "BAogysdq9WGznDqMf3EmXjM8QdR5gWEVK5WJhEXgPB7S",
+  "address": "uSWfcG2A6oC2UcWcX1wamipAbu2BXY3yf3WBGJ7mBAY",
   "metadata": {
     "name": "movie_reviews",
     "version": "0.1.0",
@@ -58,6 +58,10 @@
         {
           "name": "rating",
           "type": "u8"
+        },
+        {
+          "name": "image",
+          "type": "string"
         }
       ]
     },
@@ -214,6 +218,10 @@
           },
           {
             "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "image",
             "type": "string"
           }
         ]

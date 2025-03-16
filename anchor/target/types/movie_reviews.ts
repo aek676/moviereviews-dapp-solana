@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/movie_reviews.json`.
  */
 export type MovieReviews = {
-  "address": "BAogysdq9WGznDqMf3EmXjM8QdR5gWEVK5WJhEXgPB7S",
+  "address": "uSWfcG2A6oC2UcWcX1wamipAbu2BXY3yf3WBGJ7mBAY",
   "metadata": {
     "name": "movieReviews",
     "version": "0.1.0",
@@ -64,6 +64,10 @@ export type MovieReviews = {
         {
           "name": "rating",
           "type": "u8"
+        },
+        {
+          "name": "image",
+          "type": "string"
         }
       ]
     },
@@ -220,6 +224,10 @@ export type MovieReviews = {
           },
           {
             "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "image",
             "type": "string"
           }
         ]

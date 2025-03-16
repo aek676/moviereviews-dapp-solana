@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-movie_reviews = "BAogysdq9WGznDqMf3EmXjM8QdR5gWEVK5WJhEXgPB7S"
+movie_reviews = "uSWfcG2A6oC2UcWcX1wamipAbu2BXY3yf3WBGJ7mBAY"
 
 [registry]
 url = "https://api.devnet.solana.com"

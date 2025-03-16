@@ -4,7 +4,7 @@ pub mod constants;
 
 pub use constants::*;
 
-declare_id!("BAogysdq9WGznDqMf3EmXjM8QdR5gWEVK5WJhEXgPB7S");
+declare_id!("uSWfcG2A6oC2UcWcX1wamipAbu2BXY3yf3WBGJ7mBAY");
 
 #[program]
 pub mod movie_reviews {
@@ -15,6 +15,7 @@ pub mod movie_reviews {
         title: String,
         description: String,
         rating: u8,
+        image: String,
     ) -> Result<()> {
         // We require that the rating is between 1 and 5
         require!(
@@ -38,12 +39,14 @@ pub mod movie_reviews {
         msg!("Title: {}", title);
         msg!("Description: {}", description);
         msg!("Rating: {}", rating);
+        msg!("Image: {}", image);
 
         let movie_review = &mut ctx.accounts.movie_review;
         movie_review.reviewer = ctx.accounts.initializer.key();
         movie_review.title = title;
         movie_review.description = description;
         movie_review.rating = rating;
+        movie_review.image = image;
 
         Ok(())
     }
@@ -138,6 +141,7 @@ pub struct MovieAccountState {
     pub rating: u8,
     pub title: String,
     pub description: String,
+    pub image: String,
 }
 
 /*
@@ -146,7 +150,7 @@ pub struct MovieAccountState {
     We need to add the length of the title and description to the space upon initialization.
  */
 impl Space for MovieAccountState {
-    const INIT_SPACE: usize = ANCHOR_DISCRIMINATOR + PUBKEY_SIZE + U8_SIZE + STRING_LENGTH_PREFIX + STRING_LENGTH_PREFIX;
+    const INIT_SPACE: usize = ANCHOR_DISCRIMINATOR + PUBKEY_SIZE + U8_SIZE + STRING_LENGTH_PREFIX + STRING_LENGTH_PREFIX + STRING_LENGTH_PREFIX + IMAGE_SIZE;
 }
 
 #[error_code]

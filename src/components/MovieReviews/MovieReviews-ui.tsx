@@ -9,6 +9,8 @@ import {
   useMovieReviewsProgramAccount,
 } from "./MovieReviews-data-access";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { getMoviePoster } from "@/lib/utils";
+import { uploadUrl } from "../umi/lib/umiUploadFile";
 
 export function MovieReviewsCreate() {
   const { addMovieReview } = useMovieReviewsProgram();
@@ -20,8 +22,11 @@ export function MovieReviewsCreate() {
   const isFormValid =
     title.trim() !== "" && description.trim() !== "" && rating > 0;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const getPoster = await getMoviePoster(title);
+    const uri = await uploadUrl(getPoster);
 
     if (publicKey && isFormValid) {
       addMovieReview.mutateAsync({
@@ -29,6 +34,7 @@ export function MovieReviewsCreate() {
         description,
         rating,
         owner: publicKey,
+        image: uri,
       });
     }
   };
@@ -153,6 +159,11 @@ function MovieReviewsCard({ account }: { account: PublicKey }) {
     return aux;
   }, [accountQuery.data?.rating]);
 
+  const image = useMemo(
+    () => accountQuery.data?.image ?? "No image",
+    [accountQuery.data?.image]
+  );
+
   const handleUpdate = (e: React.FormEvent) => {
     e.preventDefault();
     if (newDescription !== description || newRating !== rating) {
@@ -174,6 +185,14 @@ function MovieReviewsCard({ account }: { account: PublicKey }) {
     <div className="card card-bordered border-base-300 border-4 text-neutral-content">
       <div className="card-body items-center text-center">
         <div className="space-y-6">
+          <div className="w-full h-[300px] rounded-lg overflow-hidden flex items-center justify-center">
+            <img
+              className="w-full h-full object-contain object-center"
+              src={`https://devnet.irys.xyz/${image}`}
+              alt={title}
+            />
+          </div>
+
           <h2
             className="card-title justify-center text-3xl cursor-pointer"
             onClick={() => accountQuery.refetch()}

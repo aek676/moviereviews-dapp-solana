@@ -17,6 +17,7 @@ interface CreateEntryArgs {
   title: string;
   description: string;
   rating: number;
+  image?: string;
   owner: PublicKey;
 }
 
@@ -46,8 +47,15 @@ export function useMovieReviewsProgram() {
 
   const addMovieReview = useMutation<string, Error, CreateEntryArgs>({
     mutationKey: ["MovieReviews", "addMovieReview", { cluster }],
-    mutationFn: ({ title, description, rating }) => {
-      return program.methods.addMovieReview(title, description, rating).rpc();
+    mutationFn: ({ title, description, rating, image }) => {
+      return program.methods
+        .addMovieReview(
+          title,
+          description,
+          rating,
+          image || "6gQbZWRnaKBVk9Dvrfvt3tgdvYxPMU49W32MUB4xVNLV"
+        )
+        .rpc();
     },
     onSuccess: (signature) => {
       transactionToast(signature);

@@ -30,7 +30,7 @@ export function getMovieReviewsProgramId(cluster: Cluster) {
     case "devnet":
     case "testnet":
       // This is the program ID for the MovieReviews program on devnet and testnet.
-      return new PublicKey("BAogysdq9WGznDqMf3EmXjM8QdR5gWEVK5WJhEXgPB7S");
+      return new PublicKey("uSWfcG2A6oC2UcWcX1wamipAbu2BXY3yf3WBGJ7mBAY");
     case "mainnet-beta":
     default:
       return MOVIE_REVIEWS_PROGRAM_ID;

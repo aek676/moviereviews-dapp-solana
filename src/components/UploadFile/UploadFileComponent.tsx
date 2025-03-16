@@ -1,10 +1,14 @@
 // Ejemplo: UploadFileComponent.tsx
 "use client";
 import React, { useState } from "react";
-import umiUploadFile from "@/components/umi/lib/umiUploadFile"; // Ajusta la ruta según tu estructura
+import { umiUploadFile, uploadUrl } from "@/components/umi/lib/umiUploadFile"; // Ajusta la ruta según tu estructura
+import { getMoviePoster } from "@/lib/utils";
 
 const UploadFileComponent: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [movieTitle, setMovieTitle] = useState<string>("");
+  const [posterUrl, setPosterUrl] = useState<string | null>(null);
+  const [posterUri, setPosterUri] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -26,6 +30,7 @@ const UploadFileComponent: React.FC = () => {
 
       // Llamamos a tu método umiUploadFile, pasándole el File del input
       const uri = await umiUploadFile(selectedFile);
+      console.log("Subido a:", uri);
 
       setIsLoading(false);
       setMessage("¡Archivo subido con éxito!");
@@ -33,6 +38,29 @@ const UploadFileComponent: React.FC = () => {
       console.error("Error al subir el archivo:", error);
       setIsLoading(false);
       setMessage("Error al subir el archivo.");
+    }
+  };
+
+  const handlePoster = async () => {
+    try {
+      const posterUrl = await getMoviePoster(movieTitle);
+      console.log("Poster URL:", posterUrl);
+      setPosterUrl(posterUrl);
+    } catch (error) {
+      console.error("Error al obtener el poster:", error);
+    }
+  };
+
+  const handleUmiUpload = async () => {
+    try {
+      if (!posterUrl) {
+        console.error("No hay poster para subir");
+        return;
+      }
+      const uri = await uploadUrl(posterUrl);
+      setPosterUri(uri || "Error al subir el poster");
+    } catch (error) {
+      console.error("Error al subir el archivo a Umi:", error);
     }
   };
 
@@ -57,17 +85,44 @@ const UploadFileComponent: React.FC = () => {
         </p>
       )}
 
-      <img
+      {/* <img
         src="https://devnet.irys.xyz/6gQbZWRnaKBVk9Dvrfvt3tgdvYxPMU49W32MUB4xVNLV"
         alt="imagen"
-      />
+      /> */}
 
-      <embed
+      {/* <embed
         src="https://devnet.irys.xyz/AUqtkymhNtst5A1wP4FzaWZ7mJiMqY7djBzPHQvY2A4W"
         width="800px"
         height="600px"
         type="application/pdf"
+      /> */}
+
+      <h2>Buscar poster de película</h2>
+      <input
+        type="text"
+        value={movieTitle}
+        onChange={(e) => setMovieTitle(e.target.value)}
+        style={{ display: "block", marginBottom: "1rem" }}
       />
+      <button onClick={handlePoster}>Buscar poster</button>
+
+      {posterUrl && (
+        // PosterUrl existe
+        <>
+          <img
+            src={posterUrl}
+            alt="Movie Poster"
+            style={{
+              maxWidth: "100%",
+              marginTop: "1rem",
+            }}
+          />
+
+          <button onClick={handleUmiUpload}>Subir a Umi</button>
+        </>
+      )}
+
+      {posterUri && <p style={{ marginTop: "1rem" }}>Subido a: {posterUri}</p>}
     </div>
   );
 };
